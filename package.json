@@ -8,7 +8,8 @@
 		"build": "vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"clean": "rm -rf dist node_modules && bun install && bun run format"
 	},
 	"dependencies": {
 		"react": "^19.2.6",

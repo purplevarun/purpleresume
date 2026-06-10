@@ -1,6 +1,6 @@
 # PurpleResume — ATS Resume Builder
 
-A split-panel resume builder for Indian SDE resumes. Clean monochrome output, ATS-safe.
+A split-panel resume builder for Indian SDE resumes.
 
 ## Quick Start
 
@@ -12,56 +12,66 @@ npm run dev
 
 ## Features
 
-- **Live preview** — edits reflect instantly on the A4 canvas
-- **1-column** (Jake Ryan-style, pure ATS) and **2-column** (Deedy Das-style) templates
-- **Local storage** — all data and settings auto-save in your browser
-- **Font picker** — Calibri, Arial, Georgia, Times New Roman, Garamond, Helvetica, Palatino
-- **Font size control** — 8pt–13pt with live preview
-- **Margin control** — top/bottom/left/right individually, reflected live in preview
-- **Bold text** — wrap with `**double asterisks**` in any text field
-- **Clickable links** — use `[label](https://url)` or paste a bare URL; auto-linked on export
-- **Export PDF** — opens a print-ready A4 window with correct margins
+**Templates** (dropdown in topbar)
 
-## Formatting Syntax (works in bullets, summary, certs, achievements)
+- **Classic** — Jake Ryan-style single column, fully ATS-safe
+- **Modern** — Deedy Das-style two-column, ATS-safe
+- **Compact** — Dense single column for high-content resumes, ATS-safe
+- **Elegant** — Centered serif header with flanking rules, ATS-safe
+- **Styled** — Enhancv-inspired sidebar with accent color, photo slot, skill chips (design-focused, NOT ATS-safe)
 
-| Syntax                   | Result          |
-| ------------------------ | --------------- |
-| `**bold text**`          | **bold text**   |
-| `[label](https://url)`   | clickable link  |
-| `https://github.com/...` | auto-linked URL |
+**Sections**
+
+- All sections optional — toggle on/off in ⚙ Settings
+- Reorder sections with ▲▼ arrows in ⚙ Settings — order is reflected live in preview
+
+**Appearance**
+
+- Font picker: Calibri, Arial, Georgia, Times New Roman, Garamond, Helvetica, Palatino
+- Base font size: 8–13pt
+- Per-side margin control (top/bottom/left/right), reflected live
+
+**Data**
+
+- All data and settings auto-save to localStorage
+- Photo upload (used by Styled template)
+- Reset to defaults button in Settings
+
+**Formatting** (works in bullets, summary, certs, achievements)
+
+- `**bold text**` → bold
+- `[label](https://url)` → clickable link
+- bare `https://...` URLs → auto-linked
 
 ## File Structure
 
 ```
 src/
 ├── App.jsx
-├── data/defaults.js              # Seed data, font options, empty templates
+├── data/defaults.js              # Templates, fonts, section defs, seed data
 ├── hooks/
-│   ├── useResumeData.js          # All state + localStorage persistence
-│   └── usePrint.js               # PDF export
+│   ├── useResumeData.js          # State + localStorage + section order/toggle
+│   └── usePrint.js
 ├── components/
-│   ├── ui/
-│   │   ├── primitives.jsx        # Input, Textarea, AddButton, CardShell, Tip
-│   │   └── BulletEditor.jsx      # Bullet list editor
+│   ├── ui/primitives.jsx
+│   ├── ui/BulletEditor.jsx
 │   ├── form/
-│   │   ├── BasicsForm.jsx
+│   │   ├── BasicsForm.jsx        # Includes photo upload
 │   │   ├── ExperienceForm.jsx
 │   │   ├── EducationForm.jsx
 │   │   ├── ProjectForm.jsx
 │   │   ├── SkillsForm.jsx
 │   │   ├── ListForm.jsx
-│   │   └── SettingsForm.jsx      # Font, size, margins, formatting guide
+│   │   └── SettingsForm.jsx      # Section toggle/reorder, font, margins
 │   └── resume/
-│       ├── renderText.jsx        # Inline markdown parser (**bold**, [link](url))
-│       ├── resumeStyles.jsx      # buildR() — dynamic style constants + shared components
-│       ├── Resume1Col.jsx        # Single column template
-│       └── Resume2Col.jsx        # Two column template
+│       ├── renderText.jsx        # **bold** and [link](url) parser
+│       ├── resumeStyles.jsx      # buildR(), BulletList, HRule, ContactLink
+│       ├── SectionRenderer.jsx   # Shared ExpEntry, EduEntry, ProjEntry, etc.
+│       ├── templateUtils.jsx     # getVisibleSections()
+│       ├── ResumeRenderer.jsx    # Template switcher
+│       ├── TemplateClassic.jsx
+│       ├── TemplateModern.jsx
+│       ├── TemplateCompact.jsx
+│       ├── TemplateElegant.jsx
+│       └── TemplateStyled.jsx
 ```
-
-## ATS Notes
-
-- No tables, no text boxes, no graphics
-- Pure inline styles — no external CSS in output
-- Standard section names that ATS parsers recognise
-- `<strong>` and `<a>` are both ATS-safe
-- Strictly monochrome — no colour

@@ -1,91 +1,55 @@
-export const DEFAULT_DATA = {
-	name: "Varun Sharma",
-	title: "Software Development Engineer",
-	email: "varun.sharma@gmail.com",
-	phone: "+91 98765 43210",
-	location: "Bengaluru, Karnataka",
-	linkedin: "linkedin.com/in/varunsharma",
-	github: "github.com/varunsharma",
-	portfolio: "",
-	summary:
-		"Results-driven SDE with 3+ years of experience building scalable full-stack applications. Proficient in React, Node.js, and AWS. Strong track record of delivering high-impact features and optimizing system performance at scale.",
-	experience: [
-		{
-			id: 1,
-			company: "Flipkart",
-			role: "Software Development Engineer II",
-			location: "Bengaluru",
-			start: "Aug 2022",
-			end: "Present",
-			bullets: [
-				"Led development of a real-time inventory sync service handling **50K+ events/sec** using Kafka and Redis, reducing latency by **40%**.",
-				"Architected and shipped a seller onboarding portal (React + Node.js) used by **10,000+ merchants**, cutting onboarding time by 60%.",
-				"Drove migration of legacy monolith to microservices, improving deployment frequency from monthly to daily releases.",
-			],
-		},
-		{
-			id: 2,
-			company: "Paytm",
-			role: "Software Development Engineer I",
-			location: "Noida",
-			start: "Jul 2021",
-			end: "Jul 2022",
-			bullets: [
-				"Built payment reconciliation pipelines in Java Spring Boot processing **₹5Cr+ daily** transactions with 99.9% accuracy.",
-				"Implemented A/B testing framework that increased checkout conversion by **12%** across 2M+ daily active users.",
-			],
-		},
-	],
-	education: [
-		{
-			id: 1,
-			institution: "Indian Institute of Technology, Delhi",
-			degree: "B.Tech in Computer Science and Engineering",
-			score: "CGPA: 8.7 / 10",
-			year: "2017 – 2021",
-		},
-	],
-	skills: {
-		Languages: "Java, JavaScript, TypeScript, Python, SQL",
-		Frontend: "React.js, Next.js, Redux, Tailwind CSS",
-		Backend: "Node.js, Spring Boot, Express.js, REST APIs, GraphQL",
-		Databases: "MySQL, PostgreSQL, MongoDB, Redis",
-		"Cloud & DevOps":
-			"AWS (EC2, S3, Lambda), Docker, Kubernetes, CI/CD, Jenkins",
-		Tools: "Git, Jira, Postman, IntelliJ IDEA, VS Code",
+// ─── Section definitions ──────────────────────────────────────────────────────
+// id must match the key used in resume data/rendering
+export const ALL_SECTIONS = [
+	{ id: "summary", label: "Summary" },
+	{ id: "experience", label: "Experience" },
+	{ id: "education", label: "Education" },
+	{ id: "skills", label: "Skills" },
+	{ id: "projects", label: "Projects" },
+	{ id: "certifications", label: "Certifications" },
+	{ id: "achievements", label: "Achievements" },
+];
+
+export const DEFAULT_SECTION_ORDER = ALL_SECTIONS.map((s) => s.id);
+export const DEFAULT_SECTION_VISIBLE = Object.fromEntries(
+	ALL_SECTIONS.map((s) => [s.id, true]),
+);
+
+// ─── Templates ───────────────────────────────────────────────────────────────
+export const TEMPLATES = [
+	{
+		id: "classic",
+		label: "Classic",
+		desc: "Single column · ATS-safe",
+		ats: true,
 	},
-	projects: [
-		{
-			id: 1,
-			name: "CodeCollab",
-			tech: "React, Node.js, WebSockets, MongoDB",
-			link: "https://github.com/varunsharma/codecollab",
-			bullets: [
-				"Built a real-time collaborative code editor supporting **20+ programming languages** with live cursor sync for up to 10 users.",
-				"Integrated Judge0 API for code execution with rate limiting and sandboxing.",
-			],
-		},
-	],
-	certifications: [
-		"AWS Certified Solutions Architect – Associate (2023)",
-		"Google Cloud Professional Data Engineer (2022)",
-	],
-	achievements: [
-		"Ranked in **top 500** globally on LeetCode (handle: varunsharma); solved 800+ problems.",
-		"Winner, Flipkart GRiD 4.0 (2022) – national-level engineering competition.",
-	],
-};
+	{
+		id: "modern",
+		label: "Modern",
+		desc: "Two column · ATS-safe",
+		ats: true,
+	},
+	{
+		id: "compact",
+		label: "Compact",
+		desc: "Dense single column · ATS-safe",
+		ats: true,
+	},
+	{
+		id: "elegant",
+		label: "Elegant",
+		desc: "Serif · centered header · ATS-safe",
+		ats: true,
+	},
+	{
+		id: "styled",
+		label: "Styled",
+		desc: "Sidebar accent · design-focused",
+		ats: false,
+	},
+];
 
-export const DEFAULT_SETTINGS = {
-	layout: "1col",
-	font: "Calibri",
-	fontSize: 10,
-	marginTop: 14,
-	marginBottom: 14,
-	marginLeft: 14,
-	marginRight: 14,
-};
-
+// ─── Fonts ───────────────────────────────────────────────────────────────────
 export const FONT_OPTIONS = [
 	{ label: "Calibri", value: "Calibri, Arial, sans-serif" },
 	{ label: "Arial", value: "Arial, sans-serif" },
@@ -96,6 +60,103 @@ export const FONT_OPTIONS = [
 	{ label: "Palatino", value: "Palatino, 'Book Antiqua', serif" },
 ];
 
+// ─── Default resume data ──────────────────────────────────────────────────────
+export const DEFAULT_DATA = {
+	name: "Varun Kedia",
+	title: "Software Developer",
+	email: "purplevarun@gmail.com",
+	phone: "+91 70018 07604",
+	location: "Bangalore, India",
+	linkedin: "linkedin.com/in/purplevarun",
+	github: "github.com/purplevarun",
+	portfolio: "",
+	photo: "",
+	summary:
+		"Results-driven Software Developer with 3+ years at Thoughtworks delivering scalable full-stack solutions across ed-tech and fintech. Proficient in Java, Spring Boot, React, and cloud-native architectures. Strong track record of **30%+ client satisfaction** gains and measurable performance improvements.",
+	experience: [
+		{
+			id: 1,
+			company: "Thoughtworks",
+			role: "Senior Developer",
+			location: "Bangalore, India",
+			start: "12/2024",
+			end: "Present",
+			bullets: [
+				"Led code reviews and mentoring sessions to ensure best coding practices and knowledge sharing.",
+				"Collaborated with international clients across the **US, UK, Germany, India, and Japan**, delivering customized solutions in ed-tech and fintech, resulting in a **30% increase** in client satisfaction.",
+				"Migrated legacy applications from **Java 8 to Java 17**, leveraging new features for improved performance and security.",
+				"Conducted technical interviews and onboarded new developers to strengthen the engineering team.",
+				"Integrated **SonarQube** for static code analysis to maintain high-quality code.",
+				"Leveraged design patterns and best coding practices, resulting in a **40% improvement** in code maintainability.",
+			],
+		},
+		{
+			id: 2,
+			company: "Thoughtworks",
+			role: "Developer",
+			location: "Bangalore, India",
+			start: "08/2022",
+			end: "12/2024",
+			bullets: [
+				"Migrated monolithic applications to **microservices architecture** using SOLID principles.",
+				"Designed a dynamic **locale-based content delivery system**, expanding adoption to **10+ countries**.",
+				"Designed and implemented RESTful APIs and integrated third-party services for enhanced functionality.",
+				"Optimized complex SQL queries and stored procedures for **PostgreSQL** databases.",
+				"Used **Kafka** and **RabbitMQ** for async messaging, cutting response time by **10%**.",
+			],
+		},
+	],
+	education: [
+		{
+			id: 1,
+			institution: "Asansol Engineering College",
+			degree: "BTech – Information Technology",
+			score: "CGPA: 9.2 / 10",
+			year: "08/2018 – 07/2022",
+		},
+	],
+	skills: {
+		Languages: "Java, JavaScript, Python, SQL",
+		Frontend: "React JS, React Native",
+		Backend: "Spring Boot, REST API, Serverless, Kafka, RabbitMQ",
+		Databases: "PostgreSQL, MongoDB",
+		"Cloud & DevOps": "AWS, Docker, Kubernetes, GIT",
+		Practices: "Design Patterns, Unit Testing, Domain-Driven Design",
+	},
+	projects: [
+		{
+			id: 1,
+			name: "PurpleCoins",
+			tech: "React Native, SQLite, MongoDB",
+			link: "https://github.com/purplevarun/purplecoins",
+			bullets: [
+				"Personal finance tracking Android app using **React Native**.",
+				"Utilized **MongoDB** for cloud syncing across devices.",
+				"Used **SQLite3** for local-first offline approach.",
+			],
+		},
+	],
+	certifications: ["AWS Certified Solutions Architect – Associate"],
+	achievements: [
+		"Employee of the Month — Thoughtworks",
+		'Received **"Exceeded Expectations"** performance rating',
+		"Mentored **5+ junior developers**",
+		"Solved **200+ DSA problems** on LeetCode",
+	],
+};
+
+export const DEFAULT_SETTINGS = {
+	template: "classic",
+	fontFamily: "Calibri, Arial, sans-serif",
+	fontSize: 10,
+	marginTop: 14,
+	marginBottom: 14,
+	marginLeft: 14,
+	marginRight: 14,
+	sectionOrder: DEFAULT_SECTION_ORDER,
+	sectionVisible: DEFAULT_SECTION_VISIBLE,
+};
+
 export const EMPTY_EXP = {
 	company: "",
 	role: "",
@@ -104,14 +165,12 @@ export const EMPTY_EXP = {
 	end: "",
 	bullets: [""],
 };
-
 export const EMPTY_EDU = {
 	institution: "",
 	degree: "",
 	score: "",
 	year: "",
 };
-
 export const EMPTY_PROJ = {
 	name: "",
 	tech: "",

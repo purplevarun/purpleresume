@@ -6,9 +6,9 @@ import { ListForm } from "./components/form/ListForm";
 import { ProjectForm } from "./components/form/ProjectForm";
 import { SettingsForm } from "./components/form/SettingsForm";
 import { SkillsForm } from "./components/form/SkillsForm";
-import { Resume1Col } from "./components/resume/Resume1Col";
-import { Resume2Col } from "./components/resume/Resume2Col";
+import { ResumeRenderer } from "./components/resume/ResumeRenderer";
 import { AddButton, SectionHeader, Tip } from "./components/ui/primitives";
+import { TEMPLATES } from "./data/defaults";
 import { usePrint } from "./hooks/usePrint";
 import { useResumeData } from "./hooks/useResumeData";
 
@@ -22,6 +22,9 @@ const TABS = [
 	{ id: "settings", label: "⚙ Settings" },
 ];
 
+// mm → px for live preview (96dpi screen, 1mm = 3.7795px)
+const MM = 3.7795;
+
 export default function App() {
 	const {
 		data,
@@ -29,6 +32,9 @@ export default function App() {
 		updateField,
 		updateSetting,
 		resetAll,
+		moveSectionUp,
+		moveSectionDown,
+		toggleSection,
 		addExp,
 		updateExp,
 		removeExp,
@@ -44,48 +50,57 @@ export default function App() {
 	const previewRef = useRef(null);
 	const { print } = usePrint();
 
-	// Convert mm margins to px for live preview (1mm ≈ 3.7795px)
-	const MM_TO_PX = 3.7795;
-	const previewPadding = {
-		paddingTop: `${settings.marginTop * MM_TO_PX}px`,
-		paddingBottom: `${settings.marginBottom * MM_TO_PX}px`,
-		paddingLeft: `${settings.marginLeft * MM_TO_PX}px`,
-		paddingRight: `${settings.marginRight * MM_TO_PX}px`,
+	const previewPad = {
+		paddingTop: `${(settings.marginTop ?? 14) * MM}px`,
+		paddingBottom: `${(settings.marginBottom ?? 14) * MM}px`,
+		paddingLeft: `${(settings.marginLeft ?? 14) * MM}px`,
+		paddingRight: `${(settings.marginRight ?? 14) * MM}px`,
 	};
 
-	// Derive fontFamily from settings font string (first font name)
-	const fontSettings = {
-		...settings,
-		fontFamily: settings.fontFamily || "Calibri, Arial, sans-serif",
-	};
+	const currentTemplate =
+		TEMPLATES.find((t) => t.id === settings.template) ?? TEMPLATES[0];
 
 	return (
 		<div
-			className="h-screen flex flex-col overflow-hidden"
 			style={{
 				fontFamily: "'Inter', system-ui, sans-serif",
 				background: "#0a0c10",
 				color: "#e2e8f0",
+				height: "100vh",
+				display: "flex",
+				flexDirection: "column",
+				overflow: "hidden",
 			}}
 		>
 			{/* ── Topbar ── */}
 			<header
-				className="flex items-center justify-between shrink-0"
 				style={{
-					padding: "10px 20px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "space-between",
+					padding: "0 20px",
+					height: 48,
 					background: "#0d1117",
 					borderBottom: "1px solid #21262d",
+					flexShrink: 0,
 				}}
 			>
-				<div className="flex items-center gap-3">
-					{/* Logo */}
-					<div className="flex items-center gap-2">
+				{/* Logo */}
+				<div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: 8,
+						}}
+					>
 						<div
 							style={{
-								width: 22,
-								height: 22,
-								background: "#7c3aed",
-								borderRadius: 5,
+								width: 26,
+								height: 26,
+								background:
+									"linear-gradient(135deg, #7c3aed, #a855f7)",
+								borderRadius: 6,
 								display: "flex",
 								alignItems: "center",
 								justifyContent: "center",
@@ -93,108 +108,130 @@ export default function App() {
 								fontWeight: 900,
 								color: "white",
 								letterSpacing: -0.5,
+								flexShrink: 0,
 							}}
 						>
 							PR
 						</div>
 						<span
 							style={{
-								fontSize: 14,
-								fontWeight: 700,
+								fontSize: 15,
+								fontWeight: 800,
 								color: "#f1f5f9",
-								letterSpacing: "-0.3px",
+								letterSpacing: "-0.5px",
 							}}
 						>
-							PurpleResume
+							Purple
+							<span style={{ color: "#a78bfa" }}>Resume</span>
 						</span>
 					</div>
-					<span
-						style={{
-							fontSize: 10,
-							color: "#475569",
-							fontWeight: 500,
-							border: "1px solid #21262d",
-							padding: "1px 8px",
-							borderRadius: 20,
-						}}
-					>
-						ATS-Optimized · Indian SDE
-					</span>
-				</div>
-
-				<div className="flex items-center gap-2">
-					{/* Layout toggle */}
+					{/* Template dropdown */}
 					<div
 						style={{
-							display: "flex",
-							background: "#161b22",
-							border: "1px solid #21262d",
-							borderRadius: 8,
-							padding: 3,
-							gap: 2,
-						}}
-					>
-						{[
-							{ id: "1col", label: "1 Column" },
-							{ id: "2col", label: "2 Column" },
-						].map((l) => (
-							<button
-								key={l.id}
-								onClick={() => updateSetting("layout")(l.id)}
-								style={{
-									padding: "4px 12px",
-									borderRadius: 6,
-									fontSize: 11,
-									fontWeight: 600,
-									border: "none",
-									cursor: "pointer",
-									transition: "all 0.15s",
-									background:
-										settings.layout === l.id
-											? "#7c3aed"
-											: "transparent",
-									color:
-										settings.layout === l.id
-											? "white"
-											: "#64748b",
-								}}
-							>
-								{l.label}
-							</button>
-						))}
-					</div>
-
-					<button
-						onClick={() => print(previewRef, data.name, settings)}
-						style={{
+							position: "relative",
 							display: "flex",
 							alignItems: "center",
-							gap: 6,
-							background: "#7c3aed",
-							color: "white",
-							border: "none",
-							borderRadius: 8,
-							padding: "6px 16px",
-							fontSize: 12,
-							fontWeight: 700,
-							cursor: "pointer",
-							transition: "background 0.15s",
 						}}
-						onMouseEnter={(e) =>
-							(e.target.style.background = "#6d28d9")
-						}
-						onMouseLeave={(e) =>
-							(e.target.style.background = "#7c3aed")
-						}
 					>
-						↓ Export PDF
-					</button>
+						<select
+							value={settings.template}
+							onChange={(e) =>
+								updateSetting("template")(e.target.value)
+							}
+							style={{
+								background: "#161b22",
+								border: "1px solid #30363d",
+								borderRadius: 7,
+								color: "#e2e8f0",
+								fontSize: 12,
+								fontWeight: 500,
+								padding: "4px 28px 4px 10px",
+								cursor: "pointer",
+								appearance: "none",
+								WebkitAppearance: "none",
+								outline: "none",
+							}}
+						>
+							{TEMPLATES.map((t) => (
+								<option key={t.id} value={t.id}>
+									{t.label} — {t.desc}
+								</option>
+							))}
+						</select>
+						<span
+							style={{
+								position: "absolute",
+								right: 8,
+								pointerEvents: "none",
+								fontSize: 9,
+								color: "#64748b",
+							}}
+						>
+							▼
+						</span>
+					</div>
+					{/* ATS badge */}
+					{currentTemplate.ats ? (
+						<span
+							style={{
+								fontSize: 10,
+								color: "#4ade80",
+								border: "1px solid #14532d",
+								background: "#052e16",
+								padding: "2px 7px",
+								borderRadius: 20,
+								fontWeight: 600,
+							}}
+						>
+							✓ ATS Safe
+						</span>
+					) : (
+						<span
+							style={{
+								fontSize: 10,
+								color: "#fb923c",
+								border: "1px solid #431407",
+								background: "#1c0a00",
+								padding: "2px 7px",
+								borderRadius: 20,
+								fontWeight: 600,
+							}}
+						>
+							⚠ Design Only
+						</span>
+					)}
 				</div>
+
+				{/* Right actions */}
+				<button
+					onClick={() => print(previewRef, data.name, settings)}
+					style={{
+						display: "flex",
+						alignItems: "center",
+						gap: 6,
+						background: "#7c3aed",
+						color: "white",
+						border: "none",
+						borderRadius: 8,
+						padding: "6px 16px",
+						fontSize: 12,
+						fontWeight: 700,
+						cursor: "pointer",
+					}}
+					onMouseEnter={(e) =>
+						(e.currentTarget.style.background = "#6d28d9")
+					}
+					onMouseLeave={(e) =>
+						(e.currentTarget.style.background = "#7c3aed")
+					}
+				>
+					↓ Export PDF
+				</button>
 			</header>
 
-			{/* ── Main Split ── */}
-			<div className="flex flex-1 overflow-hidden">
-				{/* ── Left panel: Editor ── */}
+			{/* ── Body ── */}
+			<div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+				{/* ── Left panel ── */}
 				<div
 					style={{
 						width: 380,
@@ -220,14 +257,14 @@ export default function App() {
 								key={t.id}
 								onClick={() => setActiveTab(t.id)}
 								style={{
-									padding: "10px 11px",
+									padding: "10px 10px",
 									fontSize: 11,
 									fontWeight: 600,
 									whiteSpace: "nowrap",
 									border: "none",
 									cursor: "pointer",
 									background: "transparent",
-									transition: "all 0.15s",
+									transition: "all 0.12s",
 									color:
 										activeTab === t.id
 											? "#a78bfa"
@@ -302,7 +339,7 @@ export default function App() {
 								<SectionHeader>Technical Skills</SectionHeader>
 								<Tip>
 									Mirror keywords from job descriptions. ATS
-									scores on density.
+									scores on keyword density.
 								</Tip>
 								<SkillsForm
 									skills={data.skills}
@@ -315,8 +352,8 @@ export default function App() {
 							<>
 								<SectionHeader>Projects</SectionHeader>
 								<Tip>
-									Show scale & impact. Add GitHub links — they
-									auto-become clickable.
+									Show scale & impact. GitHub links
+									auto-become clickable in the resume.
 								</Tip>
 								{data.projects.map((p) => (
 									<ProjectForm
@@ -354,7 +391,7 @@ export default function App() {
 								<ListForm
 									items={data.achievements}
 									onChange={updateField("achievements")}
-									placeholder="Top 500 LeetCode — **800+** problems solved"
+									placeholder="Employee of the Month — **Acme Corp**"
 								/>
 							</>
 						)}
@@ -363,13 +400,16 @@ export default function App() {
 							<SettingsForm
 								settings={settings}
 								updateSetting={updateSetting}
+								moveSectionUp={moveSectionUp}
+								moveSectionDown={moveSectionDown}
+								toggleSection={toggleSection}
 								resetAll={resetAll}
 							/>
 						)}
 					</div>
 				</div>
 
-				{/* ── Right panel: Live Preview ── */}
+				{/* ── Preview panel ── */}
 				<div
 					style={{
 						flex: 1,
@@ -377,28 +417,23 @@ export default function App() {
 						background: "#161b22",
 						display: "flex",
 						justifyContent: "center",
-						padding: "32px 24px",
+						padding: "28px 24px",
 					}}
 				>
-					{/* A4 canvas */}
 					<div
 						ref={previewRef}
 						style={{
 							background: "white",
 							width: "210mm",
 							minHeight: "297mm",
-							...previewPadding,
+							...previewPad,
 							boxShadow:
 								"0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)",
 							borderRadius: 2,
 							flexShrink: 0,
 						}}
 					>
-						{settings.layout === "1col" ? (
-							<Resume1Col d={data} settings={fontSettings} />
-						) : (
-							<Resume2Col d={data} settings={fontSettings} />
-						)}
+						<ResumeRenderer d={data} settings={settings} />
 					</div>
 				</div>
 			</div>

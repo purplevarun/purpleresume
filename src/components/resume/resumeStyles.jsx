@@ -1,9 +1,5 @@
 import { renderText } from "./renderText";
 
-/**
- * buildR — derives all resume style constants from user settings.
- * All sizes relative to settings.fontSize (base body size).
- */
 export function buildR(settings) {
 	const base = settings?.fontSize ?? 10;
 	const font = settings?.fontFamily ?? "Calibri, Arial, sans-serif";
@@ -14,20 +10,19 @@ export function buildR(settings) {
 		sectionSize: base * 1.0,
 		bodySize: base,
 		smallSize: base * 0.95,
-		tinySize: base * 0.9,
+		tinySize: base * 0.88,
 		sectionGap: base * 1.1,
-		entryGap: base * 0.75,
-		black: "#000000",
-		darkGray: "#222222",
-		midGray: "#444444",
-		lightGray: "#666666",
-		rule: "#000000",
-		bg: "#ffffff",
+		entryGap: base * 0.8,
+		black: "#000",
+		nearBlack: "#111",
+		darkGray: "#222",
+		midGray: "#444",
+		lightGray: "#666",
+		bg: "#fff",
 	};
 }
 
-// ─── BulletList ───────────────────────────────────────────────────────────────
-export const BulletList = ({ bullets, R }) => (
+export const BulletList = ({ bullets, R, style = {} }) => (
 	<ul style={{ margin: "3px 0 0 0", paddingLeft: 13 }}>
 		{bullets.filter(Boolean).map((b, i) => (
 			<li
@@ -37,6 +32,7 @@ export const BulletList = ({ bullets, R }) => (
 					color: R.darkGray,
 					lineHeight: 1.5,
 					marginBottom: 1.5,
+					...style,
 				}}
 			>
 				{renderText(b)}
@@ -45,45 +41,36 @@ export const BulletList = ({ bullets, R }) => (
 	</ul>
 );
 
-// ─── HRule ────────────────────────────────────────────────────────────────────
-export const HRule = ({ mt = 0, mb = 4, thick = false }) => (
+export const HRule = ({ mt = 0, mb = 4, thick = false, color }) => (
 	<div
 		style={{
-			borderBottom: thick ? `1.5px solid #000` : `0.75px solid #aaa`,
+			borderBottom: thick
+				? `1.5px solid ${color || "#000"}`
+				: `0.75px solid ${color || "#bbb"}`,
 			marginTop: mt,
 			marginBottom: mb,
 		}}
 	/>
 );
 
-// ─── ContactLink — renders a contact field as a link if it looks like one ────
 export const ContactLink = ({ value, style }) => {
 	if (!value) return null;
-
-	let href = null;
 	const v = value.trim();
-
-	if (v.startsWith("http://") || v.startsWith("https://")) {
-		href = v;
-	} else if (v.includes("linkedin.com")) {
+	let href = null;
+	if (v.startsWith("http://") || v.startsWith("https://")) href = v;
+	else if (v.includes("linkedin.com")) href = `https://${v}`;
+	else if (v.includes("github.com")) href = `https://${v}`;
+	else if (v.includes("@") && !v.includes(" ")) href = `mailto:${v}`;
+	else if (v.match(/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/|$)/))
 		href = `https://${v}`;
-	} else if (v.includes("github.com")) {
-		href = `https://${v}`;
-	} else if (v.includes("@") && !v.includes(" ")) {
-		href = `mailto:${v}`;
-	} else if (v.match(/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/|$)/)) {
-		href = `https://${v}`;
-	}
-
-	if (href) {
-		return (
-			<a
-				href={href}
-				style={{ ...style, color: "inherit", textDecoration: "none" }}
-			>
-				{value}
-			</a>
-		);
-	}
-	return <span style={style}>{value}</span>;
+	return href ? (
+		<a
+			href={href}
+			style={{ ...style, color: "inherit", textDecoration: "none" }}
+		>
+			{value}
+		</a>
+	) : (
+		<span style={style}>{value}</span>
+	);
 };
