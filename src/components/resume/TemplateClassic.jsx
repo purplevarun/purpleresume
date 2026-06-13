@@ -92,7 +92,7 @@ const Header = ({ d, R }) => {
 					</span>
 				))}
 			</div>
-			<HRule mt={7} mb={0} thick />
+			{/*<HRule mt={7} mb={0} thick />*/}
 		</div>
 	);
 };
